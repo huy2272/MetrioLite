@@ -4,6 +4,11 @@ export interface Form {
   tags: Tag[];
 }
 
+export interface CreateNewFormRequest {
+  name: string;
+  tags: Tag[];
+}
+
 export interface Tag {
   name: string;
   choices: string[];
@@ -20,4 +25,10 @@ export interface Data {
 export interface Tags {
   Type: string;
   Zone: string;
+}
+
+export enum ButtonType {
+  Edit = "Edit",
+  Delete = "Delete",
+  Add = "Add",
 }
