@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import { useState } from "react";
 import { Modal } from "antd";
-import { ButtonType, Form } from "../types";
+import { ButtonType } from "../types";
 import InputForm from "./InputForm";
 
 type ButtonProps = {

@@ -1,6 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import urls from "./urls";
-import { CreateNewFormRequest, Form } from "../types";
+import {
+  CreateNewDataRequest,
+  CreateNewFormRequest,
+  Data,
+  Form,
+} from "../types";
 
 const api = {
   formsAPI: {
@@ -27,7 +32,39 @@ const api = {
       return response.data;
     },
     async updateForm(param: Form) {
-      const response = await axios.put(`${urls.forms.formPrefix}`, param);
+      const response = await axios.put(
+        `${urls.forms.formPrefix}/${param.id}`,
+        param
+      );
+      return response.data;
+    },
+  },
+  dataAPI: {
+    async getDataById(param: number) {
+      const response = await axios.get(`${urls.data.dataPrefix}/${param}`);
+      return response.data;
+    },
+    async getDataByFormId(param: number) {
+      const response: AxiosResponse<Data[]> = await axios.get(
+        `${urls.data.dataPrefix}?formId=${param}`
+      );
+      return response.data;
+    },
+    async createNewDataInForm(param: CreateNewDataRequest) {
+      const response = await axios.post(`${urls.data.dataPrefix}`, param);
+      return response.data;
+    },
+    async updateDataInForm(param: Data) {
+      const response = await axios.put(
+        `${urls.data.dataPrefix}/${param.id}`,
+        param
+      );
+      return response.data;
+    },
+    async deleteDataInForm(param: Data) {
+      const response = await axios.delete(
+        `${urls.data.dataPrefix}/${param.id}`
+      );
       return response.data;
     },
   },

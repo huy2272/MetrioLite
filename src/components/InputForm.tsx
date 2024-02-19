@@ -27,6 +27,14 @@ const App: React.FC = () => {
     },
   });
 
+  const updateFormMutation = useMutation({
+    mutationFn: api.formsAPI.updateForm,
+    onSuccess: () => {
+      // Invalidates cache and refetch
+      queryClient.invalidateQueries({ queryKey: ["forms"] });
+    },
+  });
+
   const onFinish = (values: CreateNewFormRequest) => {
     console.log("Finish:", values);
     addFormMutation.mutate(values);

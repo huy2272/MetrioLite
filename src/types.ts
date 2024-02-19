@@ -18,6 +18,15 @@ export interface Data {
   id: number;
   formId: number;
   date: string;
+  note?: string;
+  tags: Tags;
+  value: number;
+}
+
+export interface CreateNewDataRequest {
+  formId: number;
+  date: string;
+  note?: string;
   tags: Tags;
   value: number;
 }
