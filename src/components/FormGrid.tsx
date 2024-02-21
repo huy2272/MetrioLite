@@ -12,25 +12,6 @@ import {
 import api from "../api/api";
 import moment from "moment";
 
-const data: Data[] = [
-  {
-    id: 1,
-    formId: 2,
-    date: "2024-01-01",
-    note: "hello",
-    tags: { Type: "Waste", Zone: "Residential" },
-    value: 130,
-  },
-  {
-    id: 1,
-    formId: 2,
-    date: "2024-01-01",
-    note: "hello",
-    tags: { Type: "Waste", Zone: "Residential" },
-    value: 130,
-  },
-];
-
 const FormGrid = () => {
   const queryClient = useQueryClient();
 
@@ -130,6 +111,13 @@ const FormGrid = () => {
     {
       dataIndex: "",
       key: "+",
+      render: (_, record: { id: React.Key }) => (
+        <GridBtn type={ButtonType.Data} formId={record.id} />
+      ),
+    },
+    {
+      dataIndex: "",
+      key: "+",
       render: (_, record: Form) => (
         <GridBtn type={ButtonType.Form} initVal={record} />
       ),
@@ -176,9 +164,9 @@ const FormGrid = () => {
       },
       {
         dataIndex: "",
-        key: "+",
+        key: "++",
         render: (_, record: Data) => (
-          <GridBtn type={ButtonType.Data} initVal={record} />
+          <GridBtn type={ButtonType.Data} key={record.id} initVal={record} />
         ),
       },
       {
@@ -209,6 +197,7 @@ const FormGrid = () => {
 
     return (
       <Table
+        rowKey={(record: Data) => record.id}
         columns={dataColumns}
         dataSource={getDataArray(formData)}
         pagination={false}
@@ -219,7 +208,6 @@ const FormGrid = () => {
   return (
     <>
       <GridBtn type={ButtonType.Form} />
-      <GridBtn type={ButtonType.Data} />
       <Table
         rowKey={(record: Form) => record.id}
         expandable={{ expandedRowRender }}

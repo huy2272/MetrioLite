@@ -8,9 +8,10 @@ import InputData from "./InputData";
 type ButtonProps = {
   type: ButtonType;
   initVal?: Data | Form;
+  formId?: React.Key;
 };
 
-const GridBtn = ({ type, initVal }: ButtonProps) => {
+const GridBtn = ({ type, initVal, formId }: ButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const showModal = () => {
@@ -46,8 +47,10 @@ const GridBtn = ({ type, initVal }: ButtonProps) => {
       >
         {type === ButtonType.Form ? (
           <InputForm initInputVal={initVal as Form} />
+        ) : type === ButtonType.Data ? (
+          <InputData initInputVal={initVal as Data} formId={formId!} />
         ) : (
-          <InputData initInputVal={initVal as Data} />
+          <>Incorrect Button Type</>
         )}
       </Modal>
     </>

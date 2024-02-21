@@ -1,24 +1,10 @@
 import { useState } from "react";
 import { TagOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Form,
-  Input,
-  Select,
-  SelectProps,
-  Space,
-  Typography,
-} from "antd";
+import { Avatar, Button, Form, Input, Space, Typography } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../api/api";
-import {
-  CreateNewDataRequest,
-  CreateNewFormRequest,
-  Data,
-  Tags,
-} from "../types";
-import TagInputForm from "./TagInputForm";
+import { CreateNewDataRequest, Data } from "../types";
+import TagSelectionForm from "./TagSelectionForm";
 
 const layout = {
   labelCol: { span: 8 },
@@ -29,27 +15,9 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-const data: Data[] = [
-  {
-    id: 1,
-    formId: 2,
-    date: "2024-01-01",
-    note: "hello",
-    tags: { Type: "Waste", Zone: "Residential" },
-    value: 130,
-  },
-  {
-    id: 1,
-    formId: 2,
-    date: "2024-01-01",
-    note: "hello",
-    tags: { Type: "Waste", Zone: "Residential" },
-    value: 130,
-  },
-];
-
-const InputData = (props: { initInputVal: Data }) => {
+const InputData = (props: { initInputVal: Data; formId: React.Key }) => {
   const [open, setOpen] = useState(false);
+  const { TextArea } = Input;
   const queryClient = useQueryClient();
 
   const addDataMutation = useMutation({
@@ -75,26 +43,15 @@ const InputData = (props: { initInputVal: Data }) => {
       : addDataMutation.mutate(values);
   };
 
-  const options: SelectProps["options"] = [];
-  const zoneOptions: SelectProps["options"] = [];
-  if (props.initInputVal) {
-    options.push({
-      label: props.initInputVal.tags.Type,
-      value: props.initInputVal.tags.Type,
-    });
-    zoneOptions.push({
-      label: props.initInputVal.tags.Zone,
-      value: props.initInputVal.tags.Zone,
-    });
-  }
-
   return (
     <Form.Provider
       onFormFinish={(name, { values, forms }) => {
         if (name === "tagForm") {
           const { basicForm } = forms;
-          // Data transformation for choices
-          const customValue = { ...values, choices: values.choices.split(",") };
+
+          // Data transformation
+          const customValue = { [values.name]: values.choice };
+          console.log("values", customValue);
           const tags = basicForm.getFieldValue("tags") || [];
           basicForm.setFieldsValue({ tags: [...tags, customValue] });
           setOpen(false);
@@ -115,6 +72,10 @@ const InputData = (props: { initInputVal: Data }) => {
           <Input />
         </Form.Item>
 
+        <Form.Item name="note" label="Notes">
+          <TextArea />
+        </Form.Item>
+
         <Form.Item name="value" label="Value" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
@@ -130,21 +91,18 @@ const InputData = (props: { initInputVal: Data }) => {
           rules={[{ required: true }]}
         >
           {({ getFieldValue }) => {
-            const tags: Tags = getFieldValue("tags") || [];
-            return Object.keys(tags).length ? (
+            const tags: Array<{ name: string; choices: string }> =
+              getFieldValue("tags") || [];
+            return tags.length ? (
               <ul>
-                <li className="tag-type">
-                  <Space>
-                    <Avatar icon={<TagOutlined />} />
-                    {`Type: ${tags.Type}`}
-                  </Space>
-                </li>
-                <li className="tag-zone">
-                  <Space>
-                    <Avatar icon={<TagOutlined />} />
-                    {`Zone: ${tags.Zone}`}
-                  </Space>
-                </li>
+                {tags.map((tag: { name: string; choices: string }) => (
+                  <li key={tag.name} className="tag">
+                    <Space>
+                      <Avatar icon={<TagOutlined />} />
+                      {`${tag.name}: ${tag.choices}`}
+                    </Space>
+                  </li>
+                ))}
               </ul>
             ) : (
               <Typography.Text className="ant-form-text" type="secondary">
@@ -169,11 +127,12 @@ const InputData = (props: { initInputVal: Data }) => {
         </Form.Item>
       </Form>
 
-      <TagInputForm
+      <TagSelectionForm
         open={open}
         onCancel={() => {
           setOpen(false);
         }}
+        id={props.formId}
       />
     </Form.Provider>
   );

@@ -15,25 +15,6 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-const data: Data[] = [
-  {
-    id: 1,
-    formId: 2,
-    date: "2024-01-01",
-    note: "hello",
-    tags: { Type: "Waste", Zone: "Residential" },
-    value: 130,
-  },
-  {
-    id: 1,
-    formId: 2,
-    date: "2024-01-01",
-    note: "hello",
-    tags: { Type: "Waste", Zone: "Residential" },
-    value: 130,
-  },
-];
-
 const InputForm = (props: { initInputVal: FormType }) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();

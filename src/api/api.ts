@@ -15,7 +15,7 @@ const api = {
       );
       return response.data;
     },
-    async getFormById(param: number) {
+    async getFormById(param: React.Key) {
       const formId = param;
       const response: AxiosResponse<Form> = await axios.get(
         `${urls.forms.formPrefix}/${formId}`
