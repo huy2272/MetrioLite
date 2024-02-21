@@ -57,11 +57,22 @@ const FormGrid = () => {
     deleteFormMutation.mutate(id);
   };
 
+  const handleDataDelete = (id: React.Key) => {
+    deleteDataMutation.mutate(id);
+  };
   const deleteFormMutation = useMutation({
     mutationFn: api.formsAPI.deleteForm,
     onSuccess: () => {
       // Invalidates cache and refetch
       queryClient.invalidateQueries({ queryKey: ["forms"] });
+    },
+  });
+
+  const deleteDataMutation = useMutation({
+    mutationFn: api.dataAPI.deleteDataInForm,
+    onSuccess: () => {
+      // Invalidates cache and refetch
+      queryClient.invalidateQueries({ queryKey: ["data"] });
     },
   });
 
@@ -176,7 +187,7 @@ const FormGrid = () => {
         render: (_, record: { id: React.Key }) => (
           <Popconfirm
             title="Sure to delete?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDataDelete(record.id)}
           >
             <a>Delete</a>
           </Popconfirm>

@@ -56,7 +56,7 @@ const InputData = (props: { initInputVal: Data }) => {
     mutationFn: api.dataAPI.createNewDataInForm,
     onSuccess: () => {
       // Invalidates cache and refetch
-      queryClient.invalidateQueries({ queryKey: ["forms"] });
+      queryClient.invalidateQueries({ queryKey: ["data"] });
     },
   });
 
@@ -64,7 +64,7 @@ const InputData = (props: { initInputVal: Data }) => {
     mutationFn: api.dataAPI.updateDataInForm,
     onSuccess: () => {
       // Invalidates cache and refetch
-      queryClient.invalidateQueries({ queryKey: ["forms"] });
+      queryClient.invalidateQueries({ queryKey: ["data"] });
     },
   });
 

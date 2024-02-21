@@ -61,10 +61,8 @@ const api = {
       );
       return response.data;
     },
-    async deleteDataInForm(param: Data) {
-      const response = await axios.delete(
-        `${urls.data.dataPrefix}/${param.id}`
-      );
+    async deleteDataInForm(param: React.Key) {
+      const response = await axios.delete(`${urls.data.dataPrefix}/${param}`);
       return response.data;
     },
   },
