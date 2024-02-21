@@ -1,14 +1,16 @@
 import { Button } from "antd";
 import { useState } from "react";
 import { Modal } from "antd";
-import { ButtonType } from "../types";
+import { ButtonType, Data, Form } from "../types";
 import InputForm from "./InputForm";
+import InputData from "./InputData";
 
 type ButtonProps = {
   type: ButtonType;
+  initVal?: Data | Form;
 };
 
-const GridBtn = ({ type }: ButtonProps) => {
+const GridBtn = ({ type, initVal }: ButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const showModal = () => {
@@ -34,7 +36,7 @@ const GridBtn = ({ type }: ButtonProps) => {
           marginRight: 0,
         }}
       >
-        {type}
+        {initVal ? `Edit ${type}` : `Add ${type}`}
       </Button>
       <Modal
         title={type}
@@ -42,7 +44,11 @@ const GridBtn = ({ type }: ButtonProps) => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <InputForm />
+        {type === ButtonType.Form ? (
+          <InputForm initInputVal={initVal as Form} />
+        ) : (
+          <InputData initInputVal={initVal as Data} />
+        )}
       </Modal>
     </>
   );

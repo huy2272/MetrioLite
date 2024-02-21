@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TagOutlined } from "@ant-design/icons";
-import { Avatar, Button, Form, Input, Space, Typography } from "antd";
+import {
+  Avatar,
+  Button,
+  Form,
+  Input,
+  Select,
+  SelectProps,
+  Space,
+  Typography,
+} from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../api/api";
-import { CreateNewFormRequest, Data, Form as FormType } from "../types";
+import {
+  CreateNewDataRequest,
+  CreateNewFormRequest,
+  Data,
+  Tags,
+} from "../types";
 import TagInputForm from "./TagInputForm";
 
 const layout = {
@@ -34,31 +48,45 @@ const data: Data[] = [
   },
 ];
 
-const InputForm = (props: { initInputVal: FormType }) => {
+const InputData = (props: { initInputVal: Data }) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const addFormMutation = useMutation({
-    mutationFn: api.formsAPI.createNewForm,
+  const addDataMutation = useMutation({
+    mutationFn: api.dataAPI.createNewDataInForm,
     onSuccess: () => {
       // Invalidates cache and refetch
       queryClient.invalidateQueries({ queryKey: ["forms"] });
     },
   });
 
-  const updateFormMutation = useMutation({
-    mutationFn: api.formsAPI.updateForm,
+  const updateDataMutation = useMutation({
+    mutationFn: api.dataAPI.updateDataInForm,
     onSuccess: () => {
       // Invalidates cache and refetch
       queryClient.invalidateQueries({ queryKey: ["forms"] });
     },
   });
 
-  const onFinish = (values: CreateNewFormRequest) => {
+  const onFinish = (values: CreateNewDataRequest) => {
+    console.log("Finish:", values);
     props.initInputVal
-      ? updateFormMutation.mutate({ ...values, id: props.initInputVal.id })
-      : addFormMutation.mutate(values);
+      ? updateDataMutation.mutate({ ...values, id: props.initInputVal.id })
+      : addDataMutation.mutate(values);
   };
+
+  const options: SelectProps["options"] = [];
+  const zoneOptions: SelectProps["options"] = [];
+  if (props.initInputVal) {
+    options.push({
+      label: props.initInputVal.tags.Type,
+      value: props.initInputVal.tags.Type,
+    });
+    zoneOptions.push({
+      label: props.initInputVal.tags.Zone,
+      value: props.initInputVal.tags.Zone,
+    });
+  }
 
   return (
     <Form.Provider
@@ -80,7 +108,14 @@ const InputForm = (props: { initInputVal: FormType }) => {
         style={{ maxWidth: 600 }}
         initialValues={props.initInputVal}
       >
-        <Form.Item name="name" label="Form name" rules={[{ required: true }]}>
+        <Form.Item name="formId" label="Form Id" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="date" label="Data date" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item name="value" label="Value" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
 
@@ -95,18 +130,21 @@ const InputForm = (props: { initInputVal: FormType }) => {
           rules={[{ required: true }]}
         >
           {({ getFieldValue }) => {
-            const tags: Array<{ name: string; choices: string }> =
-              getFieldValue("tags") || [];
-            return tags.length ? (
+            const tags: Tags = getFieldValue("tags") || [];
+            return Object.keys(tags).length ? (
               <ul>
-                {tags.map((tag: { name: string; choices: string }) => (
-                  <li key={tag.name} className="tag">
-                    <Space>
-                      <Avatar icon={<TagOutlined />} />
-                      {`${tag.name}: ${tag.choices}`}
-                    </Space>
-                  </li>
-                ))}
+                <li className="tag-type">
+                  <Space>
+                    <Avatar icon={<TagOutlined />} />
+                    {`Type: ${tags.Type}`}
+                  </Space>
+                </li>
+                <li className="tag-zone">
+                  <Space>
+                    <Avatar icon={<TagOutlined />} />
+                    {`Zone: ${tags.Zone}`}
+                  </Space>
+                </li>
               </ul>
             ) : (
               <Typography.Text className="ant-form-text" type="secondary">
@@ -141,4 +179,4 @@ const InputForm = (props: { initInputVal: FormType }) => {
   );
 };
 
-export default InputForm;
+export default InputData;

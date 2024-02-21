@@ -37,7 +37,6 @@ export interface Tags {
 }
 
 export enum ButtonType {
-  Edit = "Edit",
-  Delete = "Delete",
-  Add = "Add",
+  Form = "Form",
+  Data = "Data",
 }

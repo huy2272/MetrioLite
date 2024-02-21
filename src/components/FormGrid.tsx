@@ -1,6 +1,4 @@
 import { Popconfirm, Table, TableColumnsType, Tag } from "antd";
-import { TableRowSelection } from "antd/es/table/interface";
-import { useEffect, useState } from "react";
 import { ButtonType, Data, Form } from "../types";
 import GridBtn from "./GridBtn";
 import {
@@ -36,15 +34,7 @@ const data: Data[] = [
 const FormGrid = () => {
   const queryClient = useQueryClient();
 
-  const handleDelete = (id: React.Key) => {
-    deleteFormMutation.mutate(id);
-  };
-
-  const {
-    isLoading,
-    isError,
-    data: forms,
-  } = useQuery({
+  const { data: forms } = useQuery({
     queryKey: ["forms"],
     queryFn: api.formsAPI.getForms,
   });
@@ -62,6 +52,10 @@ const FormGrid = () => {
         })
       : [], // if formId is undefined returns empty array
   });
+
+  const handleDelete = (id: React.Key) => {
+    deleteFormMutation.mutate(id);
+  };
 
   const deleteFormMutation = useMutation({
     mutationFn: api.formsAPI.deleteForm,
@@ -99,9 +93,35 @@ const FormGrid = () => {
       ),
     },
     {
+      title: "Choices",
+      key: "choices",
+      dataIndex: "tag.choices",
+      // Tags contain an arr of objects,
+      // each object contain a choice attribute that contains an array of all possible choices
+      render: (value, { tags }) => (
+        <>
+          {tags.map((tag) => {
+            return (
+              <>
+                {tag.choices.map((choice) => {
+                  return (
+                    <Tag key={choice} color="red">
+                      {choice}
+                    </Tag>
+                  );
+                })}
+              </>
+            );
+          })}
+        </>
+      ),
+    },
+    {
       dataIndex: "",
       key: "+",
-      render: () => <GridBtn type={ButtonType.Edit} />,
+      render: (_, record: Form) => (
+        <GridBtn type={ButtonType.Form} initVal={record} />
+      ),
     },
     {
       title: "operation",
@@ -143,8 +163,26 @@ const FormGrid = () => {
           compare: (a, b) => a.value - b.value,
         },
       },
+      {
+        dataIndex: "",
+        key: "+",
+        render: (_, record: Data) => (
+          <GridBtn type={ButtonType.Data} initVal={record} />
+        ),
+      },
+      {
+        title: "operation",
+        dataIndex: "operation",
+        render: (_, record: { id: React.Key }) => (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <a>Delete</a>
+          </Popconfirm>
+        ),
+      },
     ];
-    console.log("Record", record);
     const getDataArray = (formData: UseQueryResult<Data[], Error>[]) => {
       let dataArray: Data[] = [];
       // Destructuring formData
@@ -169,7 +207,8 @@ const FormGrid = () => {
 
   return (
     <>
-      <GridBtn type={ButtonType.Add} />
+      <GridBtn type={ButtonType.Form} />
+      <GridBtn type={ButtonType.Data} />
       <Table
         rowKey={(record: Form) => record.id}
         expandable={{ expandedRowRender }}
